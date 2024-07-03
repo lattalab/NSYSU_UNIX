@@ -1,0 +1,293 @@
+#!/usr/bin/tcsh
+# This script shows an alternate way to achieve colorecho's functionality:
+# by using one giant switch statement. This alternate way is very readable,
+# but the problem is that it is more than 200 lines long!
+#
+# So, the goal of your programming assignment is to get the same behavior,
+# but with far fewer lines -- because you will follow the steps described 
+# in a file that I'll give you later, to create a correct colorecho script.
+
+source colors
+# Notice the above use of source (Lect 2, Slide 186). The colors script defines
+# many color codes.
+
+
+
+# If you find that colors aren't printing, try uncommenting the following line:
+# set Macintosh
+
+if ( $?Macintosh ) then
+# Notice, in the line above, the usage of a boolean variable
+    alias eco '(printf "%b " \!:*)|rev|cut -c2-|rev'
+    # Notice the use of alias (Lect 2, Slide 12), rev (Lect 1, Slide 23),
+    # and cut (Lect 2, slide 6), in the line above...    
+    # (The code also uses another command we never discussed, printf -- but you
+    # can ignore this printf; I had to use it only because Macs would work with
+    # echo.) Just know that this printf achieves what we want, but also adds an
+    # extra unwanted space " " at the end of the line.
+    # And ask yourself: what does "|rev|cut -c2-|rev" do to that extra space? 
+    echo -n eco\  > echoline
+    # Notice that the above line uses an aliased "eco" command, not an "echo".
+else
+    echo -n echo\  > echoline
+    # For normal computer uses, we just use echo and it works, without all of
+    # that Macintosh complications.
+endif
+
+#Now to really print the requested arguments and color flags:
+foreach arg ( $* )
+    # Notice the use of $*
+    switch ( $arg )
+        case --pink:
+            echo -n '"$'pink'"' >> echoline; breaksw
+            # Notice that the echoline file is getting the new color code.
+            # Notice the intersting quoting pattern that was needed.
+        case --red:
+        case --r:
+        case -r:
+        # Notice that the above three case statements have no breaksw between
+        # them. Therefore all three cases will reach this point.
+        # Furthermore, notice that each is on its own line. This is necessary.
+            echo -n '"$'red'"' >> echoline; breaksw
+            # Notice the breaksw that keeps us from falling into the next case.
+        case --brightred:
+        case --brightr:
+        case --bred:
+        case --br:
+            echo -n '"$'brightred'"' >> echoline; breaksw
+            # Just like the red case, so the brightred case...
+        case --lightred:
+        case --lightr:
+        case --lred:
+        case --lr:
+            echo -n '"$'lightred'"' >> echoline; breaksw
+            # I'm not going to comment anymore. There are hundreds of cases.
+            # But take a look at the bottom of this script before you leave...
+        case --darkred:
+        case --darkr:
+        case --dred:
+        case --dr:
+            echo -n '"$'darkred'"' >> echoline; breaksw
+        case --orange:
+        case --o:
+        case -o:
+            echo -n '"$'orange'"' >> echoline; breaksw
+        case --lightorange:
+        case --lighto:
+        case --lorange:
+        case --lo:
+            echo -n '"$'lightorange'"' >> echoline; breaksw
+        case --darkorange:
+        case --darko:
+        case --dorange:
+        case --do:
+            echo -n '"$'darkorange'"' >> echoline; breaksw
+        case --brown:
+            echo -n '"$'brown'"' >> echoline; breaksw
+        case --lightbrown:
+        case --lbrown:
+            echo -n '"$'lightbrown'"' >> echoline; breaksw
+        case --darkbrown:
+        case --dbrown:
+            echo -n '"$'darkbrown'"' >> echoline; breaksw
+        case --yellow:
+        case --y:
+        case -y:
+            echo -n '"$'yellow'"' >> echoline; breaksw
+        case --brightyellow:
+        case --brighty:
+        case --byellow:
+        case --by:
+            echo -n '"$'brightyellow'"' >> echoline; breaksw
+        case --lightyellow:
+        case --lighty:
+        case --lyellow:
+        case --ly:
+            echo -n '"$'lightyellow'"' >> echoline; breaksw
+        case --darkyellow:
+        case --darky:
+        case --dyellow:
+        case --dy:
+            echo -n '"$'darkyellow'"' >> echoline; breaksw
+        case --green:
+        case --g:
+        case -g:
+            echo -n '"$'green'"' >> echoline; breaksw
+        case --brightgreen:
+        case --brightg:
+        case --bgreen:
+        case --bg:
+            echo -n '"$'brightgreen'"' >> echoline; breaksw
+        case --lightgreen:
+        case --lightg:
+        case --lgreen:
+        case --lg:
+            echo -n '"$'lightgreen'"' >> echoline; breaksw
+        case --darkgreen:
+        case --darkg:
+        case --dgreen:
+        case --dg:
+            echo -n '"$'darkgreen'"' >> echoline; breaksw
+        case --cyan:
+        case --c:
+        case -c:
+            echo -n '"$'cyan'"' >> echoline; breaksw
+        case --brightcyan:
+        case --brightc:
+        case --bcyan:
+        case --bc:
+            echo -n '"$'brightcyan'"' >> echoline; breaksw
+        case --lightcyan:
+        case --lightc:
+        case --lcyan:
+        case --lc:
+            echo -n '"$'lightcyan'"' >> echoline; breaksw
+        case --darkcyan:
+        case --darkc:
+        case --dcyan:
+        case --dc:
+            echo -n '"$'darkcyan'"' >> echoline; breaksw
+        case --blue:
+        case --b:
+        case -b:
+            echo -n '"$'blue'"' >> echoline; breaksw
+        case --brightblue:
+        case --brightb:
+        case --bblue:
+        case --bb:
+            echo -n '"$'brightblue'"' >> echoline; breaksw
+        case --lightblue:
+        case --lightb:
+        case --lblue:
+        case --lb:
+            echo -n '"$'lightblue'"' >> echoline; breaksw
+        case --darkblue:
+        case --darkb:
+        case --dblue:
+        case --db:
+            echo -n '"$'darkblue'"' >> echoline; breaksw
+        case --purple:
+        case --p:
+        case -p:
+            echo -n '"$'purple'"' >> echoline; breaksw
+        case --brightpurple:
+        case --brightp:
+        case --bpurple:
+        case --bp:
+            echo -n '"$'brightpurple'"' >> echoline; breaksw
+        case --lightpurple:
+        case --lightp:
+        case --lpurple:
+        case --lp:
+            echo -n '"$'lightpurple'"' >> echoline; breaksw
+        case --darkpurple:
+        case --darkp:
+        case --dpurple:
+        case --dp:
+            echo -n '"$'darkpurple'"' >> echoline; breaksw
+        case --magenta:
+        case --m:
+        case -m:
+            echo -n '"$'magenta'"' >> echoline; breaksw
+        case --brightpurple:
+        case --brightmagenta:
+        case --brightm:
+        case --bmagenta:
+        case --bm:
+            echo -n '"$'brightpurple'"' >> echoline; breaksw
+        case --lightpurple:
+        case --lightmagenta:
+        case --lightm:
+        case --lmagenta:
+        case --lm:
+            echo -n '"$'lightpurple'"' >> echoline; breaksw
+        case --darkpurple:
+        case --darkmagenta:
+        case --darkm:
+        case --dmagenta:
+        case --dm:
+            echo -n '"$'darkpurple'"' >> echoline; breaksw
+        case --white:
+        case --w:
+        case -w:
+        case --lightwhite:
+        case --lightw:
+        case --lwhite:
+        case --lw:
+            echo -n '"$'white'"' >> echoline; breaksw
+        case --brightwhite:
+        case --brightw:
+        case --bwhite:
+        case --bw:
+            echo -n '"$'brightwhite'"' >> echoline; breaksw
+        case --gray:
+        case --grey:
+            echo -n '"$'gray'"' >> echoline; breaksw
+        case --lightgray:
+        case --lightgrey:
+        case --lgray:
+        case --lgrey:
+            echo -n '"$'lightgray'"' >> echoline; breaksw
+        case --darkgray:
+        case --darkgrey:
+        case --dgray:
+        case --dgrey:
+            echo -n '"$'darkgray'"' >> echoline; breaksw
+        case --black:
+            echo -n '"$'black'"' >> echoline; breaksw
+        case --reset:
+            echo -n '"$'reset'"' >> echoline; breaksw
+        case --*:
+        # This allows echo to use any other --flags that your echo command
+        # may support.
+        # Notice also the use of wildcard patterns in the above case and in
+        # the follwing case.
+        
+        # Note also that flags won't work for Mac users, due to the alias hack
+        # Macs had to use to get colors. But that's OK. We will still create
+        # the echoline file correct; the flags only won't display correctly.
+        
+            echo -n - >> echoline
+            # Intentionally no breaksw here: we'll treat - and -- together. 
+
+        case -*:
+            (echo -n -; echo `echo x$arg|cut -c3-`) >> echoline; breaksw
+            # The reason why the above code separated out the echo into two
+            # commands was because if we just did "echo -n $arg >> echoline",
+            # then the "-" at the front of $arg would case echo to incorrectly
+            # treat $arg as a flag.
+        default:
+            #notice the use of the default case
+            echo -n $arg\  >> echoline
+    endsw
+end
+# BTW, when the line with "end" or "endsw" or "endif" doesn't ended with \n,
+# then you will get a wierd error message.
+# That is to say: if the last line of your script is an end statement, remember
+# to finish that final line with a \n.
+# Or to say it in another way: if you get a wierd error message that says the
+# "endsw" or "endif" or "end" was not found, even though you see it right there
+# on the final line of your script, then check that there is indeed a \n after
+# end statement. This will explain what I mean:
+#    % cat <your script> | tail -1    # This code should not produce this:
+#    endsw% <- The cursor didn't go to the next line. The "\n" is missing.
+
+echo >> echoline
+# Now that we have prepare the echo line, we can run it:
+source echoline
+# The above had to be run with source so that it could have access to the
+# color-named variables that had gotten defined by "source colors" back on
+# line #9, above.
+
+cat echoline | cut -d\  --complement -f1    >> colorechoout; rm -f echoline
+#      ^        ^                            ^        ^          ^
+#      |        |                            |        |          |
+# Take this    Cut out the first field...  Append to this... Never ask before
+# answer... (Our Mac hack used eco instead                   removing it.
+#            instead of echo, but cutting
+#            this part will let everyone's
+#            expected output be the same.)
+
+
+# And finally, restore the regular pen color:
+echo -n $reset

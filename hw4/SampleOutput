@@ -1,0 +1,321 @@
+1. Testing -i
+[vlva8@MSI ...unix/hw4]$ ./mgrep -i "apple" F1
+Apple is red.
+apple is sweet.
+[vlva8@MSI ...unix/hw4]$ grep -i "apple" F1
+Apple is red.
+apple is sweet.
+
+2. Testing -v
+[vlva8@MSI ...unix/hw4]$ ./mgrep -v "apple" F1
+Apple is red.
+Banana is yellow.
+Grapes are green.
+Watermelon is large and juicy.
+[vlva8@MSI ...unix/hw4]$ grep -v "apple" F1
+Apple is red.
+Banana is yellow.
+Grapes are green.
+Watermelon is large and juicy.
+
+3. Testing -o
+[vlva8@MSI ...unix/hw4]$ grep -o "is" F1
+is
+is
+is
+is
+[vlva8@MSI ...unix/hw4]$ ./mgrep -o "is" F1
+is
+is
+is
+is
+
+4. Testing -w
+[vlva8@MSI ...unix/hw4]$ ./mgrep -w "quick" F2
+The quick brown fox jumps over the lazy dog.
+A quick movement of the enemy will jeopardize six gunboats.
+[vlva8@MSI ...unix/hw4]$ grep -w "quick" F2
+The quick brown fox jumps over the lazy dog.
+A quick movement of the enemy will jeopardize six gunboats.
+
+5. Testing -n
+[vlva8@MSI ...unix/hw4]$ grep -n "quick" F2
+1:The quick brown fox jumps over the lazy dog.
+2:A quick movement of the enemy will jeopardize six gunboats.
+4:The five boxing wizards jump quickly.
+[vlva8@MSI ...unix/hw4]$ ./mgrep -n "quick" F2
+1:The quick brown fox jumps over the lazy dog.
+2:A quick movement of the enemy will jeopardize six gunboats.
+4:The five boxing wizards jump quickly.
+
+6. Testing multiple -e
+[vlva8@MSI ...unix/hw4]$ grep -e"apple" -e"Banana" F1
+apple is sweet.
+Banana is yellow.
+[vlva8@MSI ...unix/hw4]$ ./mgrep -e"apple" -e "Banana" F1
+apple is sweet.
+Banana is yellow.
+
+7. Testing -iv
+[vlva8@MSI ...unix/hw4]$ ./mgrep -i -v "apple" F1
+Banana is yellow.
+Grapes are green.
+Watermelon is large and juicy.
+[vlva8@MSI ...unix/hw4]$ grep -i -v "apple" F1
+Banana is yellow.
+Grapes are green.
+Watermelon is large and juicy.
+
+8. Testing -ow
+[vlva8@MSI ...unix/hw4]$ ./mgrep -o -w "quick" F2
+quick
+quick
+[vlva8@MSI ...unix/hw4]$ grep -o -w "quick" F2
+quick
+quick
+
+9. Testing -ne
+[vlva8@MSI ...unix/hw4]$ ./mgrep -n -e "apple" -e "banana" F1
+2:apple is sweet.
+[vlva8@MSI ...unix/hw4]$ grep -n -e "apple" -e "banana" F1
+2:apple is sweet.
+
+10. Testing -iwone
+[vlva8@MSI ...unix/hw4]$ ./mgrep -i -w -o -n -e "quick" -e "fox" F2
+1:quick
+1:fox
+2:quick
+[vlva8@MSI ...unix/hw4]$ grep -i -w -o -n -e "quick" -e "fox" F2
+1:quick
+1:fox
+2:quick
+
+11. Testing -iw
+[vlva8@MSI ...unix/hw4]$ ./mgrep -i -w "apple" F1
+Apple is red.
+apple is sweet.
+[vlva8@MSI ...unix/hw4]$ grep -i -w "apple" F1
+Apple is red.
+apple is sweet.
+
+12. Testing -io
+[vlva8@MSI ...unix/hw4]$ grep -i -o "apple" F1
+Apple
+apple
+[vlva8@MSI ...unix/hw4]$ ./mgrep -i -o "apple" F1
+Apple
+apple
+
+13. Testing -in
+[vlva8@MSI ...unix/hw4]$ ./mgrep -i -n "apple" F1
+1:Apple is red.
+2:apple is sweet.
+[vlva8@MSI ...unix/hw4]$ grep -i -n "apple" F1
+1:Apple is red.
+2:apple is sweet.
+
+14. Testing -vw
+[vlva8@MSI ...unix/hw4]$ grep -v -w "apple" F1
+Apple is red.
+Banana is yellow.
+Grapes are green.
+Watermelon is large and juicy.
+[vlva8@MSI ...unix/hw4]$ ./mgrep -v -w "apple" F1
+Apple is red.
+Banana is yellow.
+Grapes are green.
+Watermelon is large and juicy.
+
+15. Testing -vn
+[vlva8@MSI ...unix/hw4]$ ./mgrep -v -n "apple" F1
+1:Apple is red.
+3:Banana is yellow.
+4:Grapes are green.
+5:Watermelon is large and juicy.
+[vlva8@MSI ...unix/hw4]$ grep -v -n "apple" F1
+1:Apple is red.
+3:Banana is yellow.
+4:Grapes are green.
+5:Watermelon is large and juicy.
+
+16. Testing -vo
+[vlva8@MSI ...unix/hw4]$ ./mgrep -v -o "apple" F1
+[vlva8@MSI ...unix/hw4]$ grep -v -o "apple" F1
+
+17. Testing -wn
+[vlva8@MSI ...unix/hw4]$ ./mgrep -w -n "apple" F1
+2:apple is sweet.
+[vlva8@MSI ...unix/hw4]$ grep -w -n "apple" F1
+2:apple is sweet.
+
+18. Testing -wo
+[vlva8@MSI ...unix/hw4]$ ./mgrep -w -o "quick" F2
+quick
+quick
+[vlva8@MSI ...unix/hw4]$ grep -w -o "quick" F2
+quick
+quick
+
+19. Testing -on
+[vlva8@MSI ...unix/hw4]$ grep -n -o "quick" F2
+1:quick
+2:quick
+4:quick
+[vlva8@MSI ...unix/hw4]$ ./mgrep -n -o "quick" F2
+1:quick
+2:quick
+4:quick
+
+20. Testing -iwne
+[vlva8@MSI ...unix/hw4]$ ./mgrep -i -w -n -e "quick" -e "fox" F2
+1:The quick brown fox jumps over the lazy dog.
+2:A quick movement of the enemy will jeopardize six gunboats.
+[vlva8@MSI ...unix/hw4]$ grep -i -w -n -e "quick" -e "fox" F2
+1:The quick brown fox jumps over the lazy dog.
+2:A quick movement of the enemy will jeopardize six gunboats.
+
+21. Testing -ivne
+[vlva8@MSI ...unix/hw4]$ ./mgrep -i -v -n -e "quick" -e "apple" F2 F1
+F2:3:Pack my box with five dozen liquor jugs.
+F2:5:How razorback-jumping frogs can level six piqued gymnasts!
+F1:3:Banana is yellow.
+F1:4:Grapes are green.
+F1:5:Watermelon is large and juicy.
+[vlva8@MSI ...unix/hw4]$ grep -i -v -n -e "quick" -e "apple" F2 F1
+F2:3:Pack my box with five dozen liquor jugs.
+F2:5:How razorback-jumping frogs can level six piqued gymnasts!
+F1:3:Banana is yellow.
+F1:4:Grapes are green.
+F1:5:Watermelon is large and juicy.
+
+22. Testing -ione
+[vlva8@MSI ...unix/hw4]$ ./mgrep -i -o -n -e "quick" -e "apple" F2 F1
+F2:1:quick
+F2:2:quick
+F2:4:quick
+F1:1:Apple
+F1:2:apple
+[vlva8@MSI ...unix/hw4]$ grep -i -o -n -e "quick" -e "apple" F2 F1
+F2:1:quick
+F2:2:quick
+F2:4:quick
+F1:1:Apple
+F1:2:apple
+
+23. Testing -iwoe
+[vlva8@MSI ...unix/hw4]$ ./mgrep -i -o -w -e "quick" -e "apple" F2 F1
+F2:quick
+F2:quick
+F1:Apple
+F1:apple
+[vlva8@MSI ...unix/hw4]$ grep -i -o -w -e "quick" -e "apple" F2 F1
+F2:quick
+F2:quick
+F1:Apple
+F1:apple
+
+24. Testing -wive
+[vlva8@MSI ...unix/hw4]$ ./mgrep -wive "quick" -e "apple" F2 F1
+F2:Pack my box with five dozen liquor jugs.
+F2:The five boxing wizards jump quickly.
+F2:How razorback-jumping frogs can level six piqued gymnasts!
+F1:Banana is yellow.
+F1:Grapes are green.
+F1:Watermelon is large and juicy.
+[vlva8@MSI ...unix/hw4]$ grep -wive "quick" -e "apple" F2 F1
+F2:Pack my box with five dozen liquor jugs.
+F2:The five boxing wizards jump quickly.
+F2:How razorback-jumping frogs can level six piqued gymnasts!
+F1:Banana is yellow.
+F1:Grapes are green.
+F1:Watermelon is large and juicy.
+
+24. Testing -iwn
+[vlva8@MSI ...unix/hw4]$ ./mgrep -iwn The F?
+F2:1:The quick brown fox jumps over the lazy dog.
+F2:2:A quick movement of the enemy will jeopardize six gunboats.
+F2:4:The five boxing wizards jump quickly.
+[vlva8@MSI ...unix/hw4]$ grep -iwn The F?
+F2:1:The quick brown fox jumps over the lazy dog.
+F2:2:A quick movement of the enemy will jeopardize six gunboats.
+F2:4:The five boxing wizards jump quickly.
+
+25. Testing -iwv
+[vlva8@MSI ...unix/hw4]$ ./mgrep -iwv The F?
+F1:Apple is red.
+F1:apple is sweet.
+F1:Banana is yellow.
+F1:Grapes are green.
+F1:Watermelon is large and juicy.
+F2:Pack my box with five dozen liquor jugs.
+F2:How razorback-jumping frogs can level six piqued gymnasts!
+[vlva8@MSI ...unix/hw4]$ grep -iwv The F?
+F1:Apple is red.
+F1:apple is sweet.
+F1:Banana is yellow.
+F1:Grapes are green.
+F1:Watermelon is large and juicy.
+F2:Pack my box with five dozen liquor jugs.
+F2:How razorback-jumping frogs can level six piqued gymnasts!
+
+26. Testing -ivn
+[vlva8@MSI ...unix/hw4]$ ./mgrep -ivn The F?
+F1:1:Apple is red.
+F1:2:apple is sweet.
+F1:3:Banana is yellow.
+F1:4:Grapes are green.
+F1:5:Watermelon is large and juicy.
+F2:3:Pack my box with five dozen liquor jugs.
+F2:5:How razorback-jumping frogs can level six piqued gymnasts!
+[vlva8@MSI ...unix/hw4]$ grep -ivn The F?
+F1:1:Apple is red.
+F1:2:apple is sweet.
+F1:3:Banana is yellow.
+F1:4:Grapes are green.
+F1:5:Watermelon is large and juicy.
+F2:3:Pack my box with five dozen liquor jugs.
+F2:5:How razorback-jumping frogs can level six piqued gymnasts!
+
+27. Testing -iwo
+[vlva8@MSI ...unix/hw4]$ grep -iwo The F?
+F2:The
+F2:the
+F2:the
+F2:The
+[vlva8@MSI ...unix/hw4]$ ./mgrep -iwo The F?
+F2:The
+F2:the
+F2:the
+F2:The
+
+28. Testing -ino
+[vlva8@MSI ...unix/hw4]$ ./mgrep -ino The F?
+F2:1:The
+F2:1:the
+F2:2:the
+F2:4:The
+[vlva8@MSI ...unix/hw4]$ grep -ino The F?
+F2:1:The
+F2:1:the
+F2:2:the
+F2:4:The
+
+29. Testing -vwn
+[vlva8@MSI ...unix/hw4]$ grep -vwn The F?
+F1:1:Apple is red.
+F1:2:apple is sweet.
+F1:3:Banana is yellow.
+F1:4:Grapes are green.
+F1:5:Watermelon is large and juicy.
+F2:2:A quick movement of the enemy will jeopardize six gunboats.
+F2:3:Pack my box with five dozen liquor jugs.
+F2:5:How razorback-jumping frogs can level six piqued gymnasts!
+[vlva8@MSI ...unix/hw4]$ ./mgrep -vwn The F?
+F1:1:Apple is red.
+F1:2:apple is sweet.
+F1:3:Banana is yellow.
+F1:4:Grapes are green.
+F1:5:Watermelon is large and juicy.
+F2:2:A quick movement of the enemy will jeopardize six gunboats.
+F2:3:Pack my box with five dozen liquor jugs.
+F2:5:How razorback-jumping frogs can level six piqued gymnasts!

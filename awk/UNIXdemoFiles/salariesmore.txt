@@ -1,0 +1,12 @@
+Alan Turing	9.40	40
+Alfred Aho	3.50	40
+Barbara Liskov	7.50	40
+Brian Kernighan	$9.00	40
+Donld Knuth	8.50	35
+Edsger		Disjkstra	9.50	40
+Grace Hopper	40	9.10
+Jon Von Neuman	9.80	35
+Larry Page	8.50	400
+Peter Weinberger7.50	40
+Sergey Brin	7.50	55
+Tim Berners Lee	8.50	15

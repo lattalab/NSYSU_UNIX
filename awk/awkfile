@@ -1,0 +1,6 @@
+BEGIN{
+  dict["danke"]="thanks";
+  dict["schoen"]="beautiful"
+}
+{for(i=1;i<=NF;i++)if($i in dict) $i=dict[$i]}
+1

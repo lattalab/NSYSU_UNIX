@@ -1,0 +1,6 @@
+colorecho is supposed to be a "Link". 連到 colorechousingswitch
+colorechousingswitch 跟 colorecho 是一樣的功能，作業的目的是完成colorecho
+colors 已經定義好顏色了
+seeexpectedconversions 應該是說明我把參數傳進來之後，他會變成怎樣? 才可以得到最後印出顏色的結果
+checker會互相檢查 "輸出跟預期輸出檔案" (之後用runtest跑出來的輸出，會自動跑./checker來比較差異) -> Debug用的?
+事實上 colorecho會生成出colorechoout (See runtest comment)

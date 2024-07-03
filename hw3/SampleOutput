@@ -1,0 +1,170 @@
+1. Test "grep -i"
+[vlva8@MSI ...unix/hw3]$ grep -i "hello" F1
+Hello world
+HELLO WORLD
+hello WORLD
+Hello Universe
+
+[vlva8@MSI ...unix/hw3]$ ./mgrep_template -i "hello" F1
+Hello world
+HELLO WORLD
+hello WORLD
+Hello Universe
+
+2. Test "grep -w"
+[vlva8@MSI ...unix/hw3]$ grep -w "programming" F2
+I love programming.
+i LOVE programming.
+
+[vlva8@MSI ...unix/hw3]$ ./mgrep_template -w "programming" F2
+I love programming.
+i LOVE programming.
+
+3. Test "grep -o"
+[vlva8@MSI ...unix/hw3]$ grep -o "123" F?
+F1:123
+F2:123
+F3:123
+
+[vlva8@MSI ...unix/hw3]$ ./mgrep_template -o "123" F?
+F1:123
+F2:123
+F3:123
+
+4. Test "grep -n"
+[vlva8@MSI ...unix/hw3]$ grep -n "test" F3
+1:This is a test.
+
+[vlva8@MSI ...unix/hw3]$ ./mgrep_template -n "test" F3
+1:This is a test.
+
+5. Test "grep -v"
+[vlva8@MSI ...unix/hw3]$ grep -v "test" F3
+Testing is important.
+Test cases should be thorough.
+1234
+
+[vlva8@MSI ...unix/hw3]$ ./mgrep_template -v "test" F3
+Testing is important.
+Test cases should be thorough.
+1234
+
+6. Multiple flags
+# Test "grep -ie"
+[vlva8@MSI ...unix/hw3]$ ./mgrep_template -iehello -etest F?
+F1:Hello world
+F1:HELLO WORLD
+F1:hello WORLD
+F1:Hello Universe
+F3:This is a test.
+F3:Testing is important.
+F3:Test cases should be thorough.
+
+[vlva8@MSI ...unix/hw3]$ grep -iehello -etest F?
+F1:Hello world
+F1:HELLO WORLD
+F1:hello WORLD
+F1:Hello Universe
+F3:This is a test.
+F3:Testing is important.
+F3:Test cases should be thorough.
+
+# Test "grep -i -n -e pattern" 
+[vlva8@MSI ...unix/hw3]$ ./mgrep_template -i -n -e "hello" F1 F2
+F1:1:Hello world
+F1:2:HELLO WORLD
+F1:3:hello WORLD
+F1:4:Hello Universe
+
+[vlva8@MSI ...unix/hw3]$ grep -i -n -e "hello" F1 F2
+F1:1:Hello world
+F1:2:HELLO WORLD
+F1:3:hello WORLD
+F1:4:Hello Universe
+
+# Test "grep -i -n -e pattern1 -e pattern2"
+[vlva8@MSI ...unix/hw3]$ grep -i -n -e "hello" -eLove F1 F2
+F1:1:Hello world
+F1:2:HELLO WORLD
+F1:3:hello WORLD
+F1:4:Hello Universe
+F2:1:I love programming.
+F2:3:i LOVE programming.
+
+[vlva8@MSI ...unix/hw3]$ ./mgrep_template -i -n -e "hello" -eLove F1 F2
+F1:1:Hello world
+F1:2:HELLO WORLD
+F1:3:hello WORLD
+F1:4:Hello Universe
+F2:1:I love programming.
+F2:3:i LOVE programming.
+
+[vlva8@MSI ...unix/hw3]$ ./mgrep_template -i -n -e "hello" -e Love F1 F2
+F1:1:Hello world
+F1:2:HELLO WORLD
+F1:3:hello WORLD
+F1:4:Hello Universe
+F2:1:I love programming.
+F2:3:i LOVE programming.
+
+[vlva8@MSI ...unix/hw3]$ grep -i -n -e "hello" -e Love F1 F2
+F1:1:Hello world
+F1:2:HELLO WORLD
+F1:3:hello WORLD
+F1:4:Hello Universe
+F2:1:I love programming.
+F2:3:i LOVE programming.
+
+# multiple flags occured many times
+[vlva8@MSI ...unix/hw3]$ ./mgrep_template -ie "hello" -we Love -oetest F?
+rm: No match.
+F1:Hello
+F1:HELLO
+F1:hello
+F1:Hello
+F2:love
+F2:LOVE
+F3:test
+F3:Test
+
+[vlva8@MSI ...unix/hw3]$ grep -ie "hello" -we Love -oetest F?
+F1:Hello
+F1:HELLO
+F1:hello
+F1:Hello
+F2:love
+F2:LOVE
+F3:test
+F3:Test
+
+[vlva8@MSI ...unix/hw3]$ grep -ine "hello" -oetest F?
+F1:1:Hello
+F1:2:HELLO
+F1:3:hello
+F1:4:Hello
+F3:1:test
+F3:2:Test
+F3:3:Test
+
+[vlva8@MSI ...unix/hw3]$ ./mgrep_template -ine "hello" -oetest F?
+F1:1:Hello
+F1:2:HELLO
+F1:3:hello
+F1:4:Hello
+F3:1:test
+F3:2:Test
+F3:3:Test
+
+# Match /n/
+[vlva8@MSI ...unix/hw3]$ grep -ien "hello" F3
+grep: hello: No such file or directory
+F3:Testing is important.
+
+[vlva8@MSI ...unix/hw3]$ ./mgrep_template -ien "hello" F3
+cat: hello: No such file or directory
+F3:Testing is important.
+
+# -v and -o occured at the same time
+[vlva8@MSI ...unix/hw3]$ ./mgrep_template -iwnvo programming F?
+
+[vlva8@MSI ...unix/hw3]$ grep -iwnvo programming F?

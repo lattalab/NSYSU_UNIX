@@ -1,0 +1,11 @@
+# This script presents an easy to read and scrollable table for all of the 
+# input flag tests and what each one should become (as arguments to echo).
+
+(echo;\
+ echo \  \(This display uses less, so it can scroll up and down\);\
+ echo;\
+ \
+cat colorechoargs |u2d|tr \\r \ |u2d|tr \\r \ |u2d|tr \\r \ |u2d|tr \\r \ |\
+                   u2d|tr \\r \ |u2d|tr \\r \ |u2d|tr \\r \ |u2d|tr \\r \ |\
+                   u2d|tr \\r \ |u2d|tr \\r \ |u2d|tr \\r \ |u2d|tr \\r \ |\
+           cut -c1-29 |paste -d\  - separators colorechooutexpected ) | less

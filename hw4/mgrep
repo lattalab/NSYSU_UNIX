@@ -1,0 +1,137 @@
+#!/usr/bin/tcsh
+# This program approximates grep, but using sed and awk. This version allows
+# multi-line-spanning patterns. 
+# There are two assumptions in this assignment:
+#  - The files that are being searched will not have "=" symbols in them.
+#  - Other than the error of not giving any regular expression to search,
+#    there will be no errors in the user's passed-in command-line flags.
+
+# The following cleans up any temporary files that may have been created:
+rm -f .__args1 .__args2 .__awk .__redirect
+
+# Because we are passing regular expressions as arguments, there is the
+# possibility of a space within an argument (eg, ./mgrep "A 4 word expr"<F).
+# In order to preserve the difference between spaces inside arguments and 
+# those spaces that separate arguments, we need to store each argument into
+# separate lines of a file (the file's name is to be ".__args1"):
+foreach A ( $*:q )
+   echo =$A:q | tr -d =  >> .__args1
+end
+
+# In the following command, the first sed one-liner has the job of separating
+# flags onto lines. Eg, input "-ninwoven" -> "-n\n-i\n-n\n-w\n-o\n-v\n-en".
+# As for handling the -e, the thing after the -e is an expression that must
+# stay on the same line and must be adjusted to always be right after the -e.
+# 
+# Then, the second sed one-liner ensures that regular expressions alway have
+# a "-e" in front. What this means is that, if no -e flag is given, the first
+# non-flag argument gets a -e added to it (so as to mimic grep's behavior).
+cat .__args1| sed '/^-e$/{N;s/\n//;};s/^\(-[vinow]\)\(.\)/\1\n-\2/;P;D' |\
+              sed 'x;G;:a;$\!{N;ba};/\n-e/\!s/\n\([^-]\)/\n-e\1/'>.__args2
+
+# At this point the only way to not have a -e is if no expression was given. 
+if (`grep -c '^-e' .__args2` == 0) then
+   echo 'Usage: ./grep [OPTION]... PATTERNS [FILE]...'
+   #rm -f .__args1 .__args2 .__awk .__redirect
+   exit 1
+endif
+
+#Here we will handle -i specially
+if (`grep -c '^-i' .__args2` > 0) then
+   # Near the bottom of this file is an awk program I wrote...
+   cat mgrep | sed '1,/MY AWK$/d;/AWK BODY$/,$d' > .__awk
+   cat .__args2 | awk -f .__awk > .__args1
+   mv .__args1 .__args2
+endif
+
+# The following creates the awk program for acting like grep:
+grep '^-' .__args2 | sed \
+  '1iBEGIN{\
+   s/^-w/bef=\(^|[^a-zA-Z0-9_]\);aft=\($|[^a-zA-Z0-9_]\)=/;\
+   s/^-\([ionv]\)/  F["\1"]=1/;s/^-e\(.*\)/  E[=]=\1/'| awk -F= \
+  'NF==3{$1= $1(++c)$2;$2="\""$3"\"";NF--}\
+   NF==4{NF--}{OFS="="}1\
+   END{print"}";\
+       while((getline L<"mgrep")>0){if(Z) print L;if(L~"AWK BODY$")Z=1}}\
+  ' > .__awk
+
+set filenames = (`grep '^[^-]' .__args2`)
+if ( $#filenames == 0 ) then
+   # If the array is empty, then no file name was passed-in. That means
+   # that the input data is being streamed in through a pipe or redirect.
+   cat > .__redirect
+   set filenames = ( .__redirect )
+endif
+
+awk -f .__awk $filenames
+          
+#rm -f .__args1 .__args2 .__awk .__redirect
+
+exit
+
+#BELOW HERE IS MY AWK
+BEGIN {
+   R["a"]="[aA]";R["A"]="[aA]"; R["b"]="[bB]";R["B"]="[bB]"
+   R["c"]="[cC]";R["C"]="[cC]"; R["d"]="[dD]";R["D"]="[dD]"
+   R["e"]="[eE]";R["E"]="[eE]"; R["f"]="[fF]";R["F"]="[fF]"
+   R["g"]="[gG]";R["G"]="[gG]"; R["h"]="[hH]";R["H"]="[hH]"
+   R["i"]="[iI]";R["I"]="[iI]"; R["j"]="[jJ]";R["J"]="[jJ]"
+   R["k"]="[kK]";R["K"]="[kK]"; R["l"]="[lL]";R["L"]="[lL]"
+   R["m"]="[mM]";R["M"]="[mM]"; R["n"]="[nN]";R["N"]="[nN]"
+   R["o"]="[oO]";R["O"]="[oO]"; R["p"]="[pP]";R["P"]="[pP]"
+   R["q"]="[qQ]";R["Q"]="[qQ]"; R["r"]="[rR]";R["R"]="[rR]"
+   R["s"]="[sS]";R["S"]="[sS]"; R["t"]="[tT]";R["T"]="[tT]"
+   R["u"]="[uU]";R["U"]="[uU]"; R["v"]="[vV]";R["V"]="[vV]"
+   R["w"]="[wW]";R["W"]="[wW]"; R["x"]="[xX]";R["X"]="[xX]"
+   R["y"]="[yY]";R["Y"]="[yY]"; R["z"]="[zZ]";R["Z"]="[zZ]"}
+/^[^-]/
+/^-[^e]/
+/^-e/{ n = split($0, chars, "")
+        in_brackets = 0
+        result = chars[1] chars[2]
+        for (i = 3; i <= n; i++) {
+            char = chars[i]
+            if (char == "[") {
+                if (!inbrackets && chars[i-1] != "\\") in_brackets=i
+            } else if (char == "]") {
+                if      (!inbrackets || chars[i-1] == "\\")    { } 
+                else if (inbrackets+1==i)                      { } 
+                else if (inbrackets+2==i && chars[i-1] == "^") { } 
+                else {in_brackets=0                              }
+            }
+
+            # Replace character if not inside brackets and found in R
+            if (!in_brackets && char in R) { result = result R[char]}
+            else                           { result = result char   }
+        }
+        print result
+    }
+
+#BELOW HERE IS YOUR AWK BODY
+(ARGC>2)&&(FNR==1) {L=FILENAME":"}
+"n" in F           {L=L""FNR":"}
+1 { remains=$0
+    while (1)
+    { ____; ____; ____ # <= intialize some things for the loop that follows.
+      for (i in E)
+      {   .  # <= Using as many lines as necessary, add code here to find:
+          .  #    - the earliest match within the Es, and
+	  .  #    - using the longest match to break ties on earliest, and
+          .  #    - using bef and aft to allow for -w behavior.
+      }
+      _____ #< if -v and if the above loop found no matches, print the line.
+      _____ #< if -v or the above loop found no matches, then break.
+      if ("o" in F)
+      {  .  # <= using as many lines as necessary, add code here to print the
+         .  #    matching text. But there's a difficulty if -w was requested.
+	 .  #    In that case, make sure not to print the bef or aft parts.
+	 .  #    Note: You can't assume the bef and aft parts are 1 character
+	 .  #          long because they can be 0 characters long also.
+      }
+      else
+      {  print L""remains;
+         break
+      }
+      remains=____ #<=Advance past the match (needed for -o multiple matches)
+    }
+  }

@@ -1,0 +1,31 @@
+BEGIN{
+  F["i"]=1
+  E[1]="[aA][pP][pP][lL][eE]"
+}
+(ARGC>2)&&(FNR==1) {L=FILENAME":"}
+"n" in F           {L=L""FNR":"}
+1 { remains=$0
+    while (1)
+    { ____; ____; ____ # <= intialize some things for the loop that follows.
+      for (i in E)
+      {   .  # <= Using as many lines as necessary, add code here to find:
+          .  #    - the earliest match within the Es, and
+	  .  #    - using the longest match to break ties on earliest, and
+          .  #    - using bef and aft to allow for -w behavior.
+      }
+      _____ #< if -v and if the above loop found no matches, print the line.
+      _____ #< if -v or the above loop found no matches, then break.
+      if ("o" in F)
+      {  .  # <= using as many lines as necessary, add code here to print the
+         .  #    matching text. But there's a difficulty if -w was requested.
+	 .  #    In that case, make sure not to print the bef or aft parts.
+	 .  #    Note: You can't assume the bef and aft parts are 1 character
+	 .  #          long because they can be 0 characters long also.
+      }
+      else
+      {  print L""remains;
+         break
+      }
+      remains=____ #<=Advance past the match (needed for -o multiple matches)
+    }
+  }

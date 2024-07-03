@@ -1,0 +1,302 @@
+A fuller README file will be posted later, with specific implementation
+descriptions. This present file contains no information on how to do the
+implementation.
+
+So DON'T DO ANY IMPLEMENTATION BASED ON GUESSES OF WHAT THE ASSIGNMENT WILL BE.
+
+Instead, the purpose of this README file is to fully describe what the
+required output is. (Again: A later document will give implementation
+requirements; this document is output requirements.)
+
+
+
+So, with that out of the way... Let's see what came in the tar file that you
+must have unpacked in order to be reading this README file:
+
+% ls
+README     colorechoargs         colorechousingswitch  runtests
+checker    colorechoout          colors                seeexpectedconversions
+colorecho  colorechooutexpected  demo.png              separators
+%
+
+
+Here we see a variety of files. to begin. let's look at the ones that are
+not executables. Here is an overly complicated way to show just those files:
+
+% ls -l|fgrep -v rwx |fgrep : |cut -f2 -d: |cut -d\  -f2|paste -d\  - - - - - -
+README colorechoargs colorechoout colorechooutexpected demo.png separators
+%
+
+(Note: I've shown you the above complicated unix command sequence because this
+is a class where you are to learn unix, and the above all commands that we've
+covered. You should actually be able to work out how the above code works:
+       First run "ls -l" and see what the output is.
+             Then run "ls -l | fgrep -v rwx" and see what the output is.
+                      Then run "ls -l | fgrep -v rwx | fgrep :" and so on ...)
+
+
+So, getting back to the above files, the README file is what you are reading 
+right now. And another file is a png image that demonstrates the proper
+behavior of the colorecho file that you write for this programming assignment.
+You should look at that file now, then come back to reading this README file.
+The reason to look at it now is that it will give you the overall sense of what
+the colorecho file does.
+
+
+But what are those other four non-executable files? Let's see:
+
+% ls -l [^Rd]* |fgrep -v rwx |fgrep : |cut -f2 -d: |cut -d\  -f2 |paste - - - -
+colorechoargs   colorechoout    colorechooutexpected    separators
+%
+% echo -n || Here we will see that these 4 files are all 148 lines long:
+% wc -l colorechoargs separators colorechoout colorechooutexpected
+ 148 colorechoargs
+ 148 separators
+ 148 colorechoout
+ 148 colorechooutexpected
+ 592 total
+%
+% echo -n || Here we see what is in these 148 lines:
+% paste c*echoargs separators c*echoout c*echooutexpected | cat -n | head -4 ;\
+? set E='   ...' ; echo "$E@@   $E   $E@$E@@$E" | tr @ \\t ; \
+? paste c*echoargs separators c*echoout c*echooutexpected | cat -n | tail -2
+     1           --pink pink    ->      "$pink"pink     "$pink"pink
+     2            --red red     ->      "$red"red       "$red"red
+     3              --r r       ->      "$red"r         "$red"r
+     4               -r r       ->      "$red"r         "$red"r
+   ...                ...      ...         ...             ...
+   147          --black black   ->      "$black"black   "$black"black
+   148          --reset reset   ->      "$reset"reset   "$reset"reset
+%
+
+
+From the above, we that the colorechoout and colorechooutexpected files are the
+same (there are actually some lines that differ, just not lines 1-4,147-148.)
+These two files are for the observed and the expected output of each of the 148
+tests. As for the separators file, it is just lines of "->", and it is used to
+make the output display nicely when using paste (as I have just done, in fact,
+in the command that created the table shown above).
+
+The last file from the above table left to discuss is colorechoargs. As we can
+see in the table above, this file is a list of all 148 flags that colorecho
+will accept. For each of these 148 flags, there is a second argument that
+restates what the flag's name was, but without the "-" in the front of it.
+What do I mean? Well consider:
+
+% head -1 colorechoargs
+         --pink pink
+%
+% head -1 colorechoargs | xargs ./colorecho
+pink    <= actually is pink color
+%
+% ./colorecho --pink pink
+pink    <= actually is pink color
+%
+
+Now, before you get the idea that the only texts that can print are ones with
+the same name as the flag itself, beware that any text data can be colored --
+it is just that the colorechoargs file test only specific text cases (ie, cases
+where the text that is printed matches to the flag's name).
+What do I mean? I mean that your colorecho should correctly do the following:
+
+% ./colorecho --pink blue --red sky 
+blue sky    <= actually blue is printed in pink color, and sky is in red color
+%
+
+
+Okay, so we've seen the non-executable files. Let's see the executable ones:
+
+% ls -l | fgrep rwx | cut -f2 -d: | cut -d\  -f2 | paste -d\  - - - - - -
+checker colorecho colorechousingswitch colors runtests seeexpectedconversions
+%
+% echo -n ||"One of these is just a link (because I won't do your HW for you):
+% ls -l colorecho
+lrwxrwxrwx 1 Me None 20 Mar 20 15:34 colorecho -> colorechousingswitch
+%
+
+So it links to the file colorechousingswitch, which (based on its name) sounds
+like a different implementation of the HW assignment, but using a cshell switch
+command (which is something you will not be allowed in your implementation).
+
+
+So let's look at the rest of those executables. It turns out that they all
+have helpful comments at their tops:
+
+% ls -l *[^o] |fgrep rwx | cut -f2 -d: | cut -d\  -f2 | paste -d\  - - - - - -
+checker colorechousingswitch colors runtests seeexpectedconversions
+%
+%
+% head -9 *switch ; head -2 colors runtests checker seeexpectedconversions
+#!/usr/bin/tcsh
+# This script shows an alternate way to achieve colorecho's functionality:
+# by using one giant switch statement. This alternate way is very readable,
+# but the problem is that it is more than 200 lines long!
+#
+# So, the goal of your programming assignment is to get the same behavior,
+# but with far fewer lines -- because you will follow the steps described
+# in a file that I'll give you later, to create a correct colorecho script.
+
+==> runtests <==
+# This tests your script on all color codes, with outputs sent to colorechoout.
+# It then runs ./checker to see if your outputs were correct.
+
+==> checker <==
+#This script tests your output by comparing colorechooutexpected & colorechoout
+
+
+==> seeexpectedconversions <==
+# This script presents an easy to read and scrollable table for all of the
+# input flag tests and what each one should become (as arguments to echo).
+
+==> colors <==
+# This script gives all of the color codes.
+# By invoking this script with "source colors", all the colors get defined.
+%
+
+
+
+Take a moment to look at the comment for the "colors" file, above. It is a
+script that simple defines the color codes for us.
+
+
+Now take a moment to run "./seeexpectedconversions". It does exactly what its
+above comment says it does. You cat also run "cat seeexpectedconversions" and
+see its code. It is short and only uses commands that we have already learned,
+so you can understand it (but you will have to think about how it works, since
+it does some odd things).
+
+
+Next, take a moment to run "./checker". This is what you will get:
+
+% ./checker
+Differences found:
+
+------------------------           |    -------------------------------
+In colorechooutexpected:           |    In your generated colorechoout:
+------------------------           |    -------------------------------
+"$brightred"bred                   |    For purposes of demonstration,
+"$brightred"br                     |    I've altered these output lines
+"$lightred"lightred                |    just to have some differences
+"$lightred"lightr                  |    for ./checker to find.
+"$darkred"darkr                    |
+"$darkred"dr                       |    Of course this breaking of
+"$orange"orange                    |    certain output lines isn't
+"$lightorange"lightorange          |    a long-term problem, because
+"$lightorange"lighto               |    you will be overwriting this
+"$lightorange"lorange              |    colorechoout file with your
+"$lightorange"lo                   |    own actual ./runtest output.
+"$darkorange"do                    |
+"$lightbrown"lbrown                |    And when you have done so,
+"$darkbrown"darkbrown              |    ./checker (which automatically
+"$darkbrown"dbrown                 |    is run by ./runtest) hopefully
+"$yellow"yellow                    |    won't find any differences to
+"$yellow"y                         |    the expected out.
+------------------------           |    ------------------------------
+%
+
+Read the above text. It was created by changing lines to demonstrate that
+the checker program will summarize all such lines. You should also look at
+checker script. It uses only commands that we have already learned in class,
+and you should be able to understand it.
+
+
+Checker's output above showed this text: "For purposes of demonstration, I've
+altered these output lines just to have some differences for ./checker to find.
+Of course this breaking of certain output lines isn't a long-term problem,
+because you will be overwriting this colorechoout file with your own actual
+./runtest output."
+
+So, apparently, runtest creates coloechoout, and invokes ./checker. Let's see:
+% cat runtests
+# This tests your script on all color codes, with outputs sent to colorechoout.
+# It then runs ./checker to see if your outputs were correct.
+
+rm -f colorechoout
+cat colorechoargs | xargs -L1 ./colorecho
+echo;echo
+./checker
+%
+
+
+Well runtest isn't so difficult to understand, it turns out. The interesting
+part is only the use of a -L1 flag to make each line from colorechoargs become
+separate arguments to separate invocations of ./colorecho.
+
+We see that the runtests script does indeed invoke ./checker. But we don't see
+it creating colorechoout (but we do see it removing the old one). So, we must
+conclude that runtest's invoking of ./colorecho is where the colorechoout is
+created.
+
+Now you have not yet written colorecho. But recall that it is currently defined
+as a link to colorechousingswitch:
+
+% ls -l colorecho
+lrwxrwxrwx 1 Me None 20 Mar 20 15:34 colorecho -> colorechousingswitch
+%
+
+So this link means two things:
+ 1. When you want to create the real colorecho script, you will need to
+    FIRST: DELETE THIS LINK named color echo.
+    
+ 2. Because this link exists at the moment, you can run runtests right now.
+    And it will work. (But it will also destroy the original colorechoout
+    that came in this tar file, and which had some text about have altered
+    some lines, and about how running runtests would overwrite it.)
+
+    You can always get the old text from the tar file. So should run ./runtests
+    now, before coming back to read more of this README file that you are
+    reading right now.
+
+
+Did you do so? Not yet? Then go do it now and then come back here.
+
+Alright, now you are back. You must have seen that it printed all the colors.
+
+If, however, it crashed then take note of line 1 of colorechousingswitch:
+% head -1 colorechousingswitch
+#!/usr/bin/tcsh
+% echo -n ||'On some systems, you'll need to change this to "#!/bin/tcsh".
+%
+
+(Note that I was careful to make the other scripts, like runtest and checker,
+be generic and not use any specific shell syntax, so they should work on all
+systems; but I needed to use specific cshell syntax on colorechousingswitch,
+due to how complex the script is.)
+
+
+If it didn't crash, but also you didn't see colors, then take note of lines 16
+and 17 of colorechousingswitch:
+    
+% fgrep -B1 "# set" colorechousingswitch
+# If you find that colors aren't printing, try uncommenting the following line:
+# set Macintosh
+%
+
+So, hopefully, you have seen the colors now, as well as a final message saying
+that "All tests passed."
+
+So now, finally, we come to the last file to consider:
+% head -8 colorechousingswitch
+#!/usr/bin/tcsh
+# This script shows an alternate way to achieve colorecho's functionality:
+# by using one giant switch statement. This alternate way is very readable,
+# but the problem is that it is more than 200 lines long!
+#
+# So, the goal of your programming assignment is to get the same behavior,
+# but with far fewer lines -- because you will follow the steps described
+# in a file that I'll give you later, to create a correct colorecho script.
+%
+
+Read this colorechousingswitch script in detail. It has similarities to the
+homework implementation. It also only uses syntax we have learned already,
+and it is well commented.
+
+OK. So that was a lot to read and study. But if you take the time to study
+the scripts provided, you can learn a lot about UNIX.
+
+Going through all of this probably took you a few days. (That is why I have
+given you this information now, separately from the other file that I will
+be giving you later -- that later file will list the details of the
+implementation requirements.)
+
+See you soon (with the later implementation requirements file).

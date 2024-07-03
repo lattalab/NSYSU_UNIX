@@ -1,0 +1,18 @@
+#This script tests your output by comparing colorechooutexpected & colorechoout
+
+ls colorechoout >& /dev/null || echo "No colorechoout file found."
+ls colorechooutexpected >& /dev/null || echo "No colorechooutexpected file found."
+ls colorechoout colorechooutexpected >& /dev/null || exit 1
+wc -l < colorechoout | fgrep -vw 148 > /dev/null && echo \
+     "Output should be 148 lines, but was `wc -l <colorechoout` lines." && exit 2
+diff -qZ colorechooutexpected colorechoout > /dev/null && echo "All tests passed." && exit 0
+echo Differences found:; echo; echo \
+'------------------------           |@-------------------------------'|tr @ \\t
+echo \
+'In colorechooutexpected:           |@In your generated colorechoout:'|tr @ \\t
+echo \
+'------------------------           |@-------------------------------'|tr @ \\t
+diff -ZyW72 colorechooutexpected colorechoout | fgrep -e"|" -e"<" -e">"
+echo \
+'------------------------           |@------------------------------'|tr @ \\t
+exit 3

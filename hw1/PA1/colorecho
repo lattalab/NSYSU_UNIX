@@ -1,0 +1,158 @@
+#!/usr/bin/tcsh
+source colors
+
+# If colors aren't printing, try uncommenting this line:
+# set Macintosh
+
+
+#The following lines are the same as colorechousingswitch (and are explained there):
+if ( $?Macintosh ) then
+    alias eco '(printf "%b " \!:*)|rev|cut -c2-|rev'
+    echo -n eco\  > echoline
+else
+    echo -n echo\  > echoline
+endif
+
+#Now comes the parts that you need to fix:
+foreach i ( `seq $#` )   # <= This goes through the args, BUT we need to know the position
+	set arg = $argv[$i]   # <= Since foreach got the position, now use it to get the argument
+	
+	if ( X$arg == X- ) then  # <= Deals with the case that the argument is just a "-"
+		echo -n - >> echoline
+	else if ( X$arg == X-n ) then  # <= Deals with the case that the argument is a "-n"
+		(echo -n -;echo n) >> echoline  # <= In each of  these two ___ put just
+                                                # one symbol, in order to run these
+                                                # two echo statements in a subshell,
+                                                # so that the outputs of both of the
+                                                # echoes get redirected by the ">>".
+	else if ( X$arg != X-r && X$arg != X-o && X$arg != X-y && X$arg != X-g && X$arg != X-b && X$arg != X-p && X$arg != X-c && X$arg != X-m && X$arg != X-w && X$arg !~ X--* ) then  
+				# <= Deals with any arguments that are neither:
+                          # - One of our one letter flags (-r, -o, -y, -g, -b, -p,
+                         	#                             -c, -m, -w, -y)
+                           #             NOR (<= You musr use a "&&" to do this NOR.)
+                           # - A a "--" argument.
+                           
+                         # In other words, this if _____ will end up matching to any
+                         # input arguments that either do not start with a "-" or,
+                         # if they do start with a "-", it is not one of our 1-letter
+                         # color flags. Note: The "[^...]" syntax does not work.  
+
+		echo -n $arg\  >> echoline  # <= Send the argument to the output as-it-is.
+	else 
+		set newarg = `echo $arg | tr -d '-'` 
+				  #  <= This removes all "-"s from the argument. It will
+                                  # use a `...` and an echo, but you will need to
+                                  # keep the echo from being confused by the "-" that
+                                  # we know is at the front of this argument.
+
+        # The following if-condition tests for whether the argument is using a
+        # letter l, b, or d as an abreviation for light, bright, or dark.
+        # Now the way these would be abreviated are: lblue, lb, bblue, bb, dblue,
+        # db, lred, lr, bred, br, dred, dr, lbrown, dbrown, lyellow, ly, ... etc.
+
+        # To summarize -- 1st letter: [lbd], 2nd letter: [brycgmopw], 3+ letters: *
+        # Caveats: Don't match bro* (because br is brightred, but bro* is for brown,
+        #            and the code should not be applied to brown).
+        #          Don't match bri* (because br is brightred, but bri* is bright...,
+        #            and the code should not expand the "b" in bright, if it is
+        #            already written as "bright").
+        #          Don't worry about bad user input. For example, bbrown stands for
+        #            brightbrown. But there is no color brightbrown. That is OK.
+        #            Just let it expand to brightbrown, because it is not your job
+        #            to worry about bad user input.
+        #          Beware that the pattern matching in if-clauses supports * and
+        #            [...] - but the [...] does NOT support [^...] or [...-...].
+
+        	if ( "$newarg" =~ [lbd][brycgmopw]* && $newarg !~ bro* && $newarg !~ bri*) then
+            # The next few lines of code (as many lines as you need) will define
+            # a variable named adjective, which will have a value of either "light"
+            # or "bright" or "dark", accordingly.
+
+			if ( $newarg =~ l* ) then
+				set adjective = "light"
+			else if ( $newarg =~ b* ) then
+    				set adjective = "bright"
+			else if ( $newarg =~ d* ) then
+    				set adjective = "dark"
+			endif
+			
+			set letter = ( `echo $newarg | grep -o .` )
+				# <= This creates an array of each letter of the argument.
+                            # Hint: There is a grep expression to match any letter,
+                            #      and there is a certain grep flag that will help.
+
+			set newarg = $adjective`echo $letter[2-] | tr -d ' '` 
+			#	<= This combines adjective with all-but-the-1st element
+                            # of the above array. And it uses tr to remove spaces.
+			
+        	endif
+		
+
+        #The following section tests if the final letter of the argument is a color
+        #abreviation (eg r for red, b for blue, y for yellow, etc.)
+        #So there will be a line for each letter:
+
+        	set last_char = `echo $newarg | rev | cut -c1`
+		if ( X$last_char == Xr ) then
+    			set newarg = $newarg"ed"
+	# <= Handles the case of "r" by adding an "ed" onto the argument.
+		else if ( X$last_char == Xb ) then
+    			set newarg = $newarg"lue"
+		else if ( X$last_char == Xo ) then
+    			set newarg = $newarg"range" 
+		else if ( X$last_char == Xg ) then
+    			set newarg = $newarg"reen"  
+		else if ( X$last_char == Xc ) then
+    			set newarg = $newarg"yan"
+		else if ( X$last_char == Xp ) then
+    			set newarg = $newarg"urple"
+		else if ( X$last_char == Xm ) then
+    			set newarg = $newarg"agenta"   
+		else if ( X$last_char == Xy && X$newarg !~ X*grey && X$newarg !~ X*gray ) then
+    			set newarg = $newarg"ellow"
+		else if ( X$last_char == Xw && X$newarg !~ X*yellow ) then
+    			set newarg = $newarg"hite"
+		endif
+
+        #Caveats in the above:
+        # 1. Regarding 'y' for yellow: There is a color that ends in y: gray/grey.
+        #    You must ensure that you only add the "ellow" when the y is for yellow.
+        # 2. Regarding 'w' for white: There is a color that ends in w: yellow.
+        #    You must ensure that you only add the "hite" when the w is for white.
+
+
+
+        #The following section addresses a few synonyms:
+        	if ( $newarg =~ l*white ) set newarg = "white"
+			#<= Turn "lightwhite" into just "white"
+        
+        	if ( $newarg =~ *grey ) set newarg = `echo $newarg | tr 'e' 'a'`
+		 	#<= Turn "grey" into "gray", "lightgrey" into "lightgray", etc.
+                      #Rule: You must meaningfully use tr.
+                       #     - Hint: There is no "e" in "dark", "light", or "bright".
+                           
+        	if ( $newarg =~ *magenta ) set newarg = `echo $newarg | cut -d 'm' -f1`"purple"
+			# <= Turn "magenta" to "purple", "darkmagenta" to "darkpurple", etc
+                      #Achieving this all on one line is a bit tricky.
+                      #Rule: You must meaningfully use cut -f.
+                       #     - Hint: There is no "m" in "dark", "light", or "bright".
+                      #Note: In my old version of colors, I defined a variable named
+                       #     magenta. This was a mistake, as the color code for it
+                        #    was identical to purple. So now the new version that I
+                         #   have posted for colorechooutexpected uses purple.
+            
+        	echo -n \"\$$newarg\" >> echoline # <= sends a "$" and the variable name
+        	continue
+	endif
+    
+    #The following ________ checks that this is not the final command line argument,
+    #because we want to put a " " between arguments, but not after the last one.
+    #Note: this is an improvement over how colorechousingswitch worked.
+	if ( X$arg != X$argv[$#argv] ) echo -n " " >> echoline
+end
+
+#The following lines are the same as colorechousingswitch (and are explained there):
+source echoline
+cat echoline | cut -d\  --complement -f1    >> colorechoout; rm -f echoline
+echo -n "$reset"
+

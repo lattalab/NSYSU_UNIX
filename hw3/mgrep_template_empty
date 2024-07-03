@@ -1,0 +1,129 @@
+#!/usr/bin/tcsh
+# This program approximates grep, but using sed. (Originally, I planned to
+# have mgrep allow multi-line-spanning patterns, which would have made it
+# more powerful than grep, thus proving that sed is useful and powerful.
+# But, as I worked out the solution, it got a bit too complicated. So I
+# decided to simplify the assignment -- and that is why we are just making
+# an approximate implementation of grep.)
+
+# There are two assumptions in this assignment:
+#  - The files that are being searched will not have "=" symbols in them.
+#    (There are ways to avoid this requirement, but I'm keeping things
+#    simple.)
+#  - Other than the error of not giving any regular expressions to search,
+#    you may assume that there will be no errors in the command-line flags
+#    the user passes in.
+
+# The following cleans up any temporary files that may have been created:
+rm -f .__args[12] .__redirect[12]
+
+# Because we are passing regular expressions as arguments, there is the
+# possibility of a space within an argument (eg, ./mgrep "A 4 word expr"<F).
+# In order to preserve the difference between spaces inside arguments and 
+# those spaces that separate arguments, we need to store each argument into
+# separate lines of a file (the file's name is to be ".__args1"):
+foreach A ( ______________ )
+    echo _____________ >> .__args1
+end
+
+# The following piped command sequence makes some tweaks to .__args1 and
+# stores the result to .__args2 (we can't store directly back to .__args1,
+# because sed does not work right if the same file is used for both its
+# input and its output).
+#
+# So what are those "tweaks"?
+#  - As for the first sed one-liner, its job is to standardize the way that
+#    The passed-in flags are represented. We can understand what it means to
+#    "standardize" by a demonstration of the non-standardized flexibility
+#    that UNIX allows for indicating command-line flags. Consider:
+#        % seq 10 120 | grep -now '[12]0' | tr \\n ,
+#        1:10,11:20,% seq 10 120 | grep -now -e10 -e20 | tr \\n ,
+#        1:10,11:20,% seq 10 120 | grep -now -e 10 -e 20 | tr \\n ,
+#        1:10,11:20,% seq 10 120 | grep -n -o -we 10 -e 20 | tr \\n ,
+#        1:10,11:20,% seq 10 120 | grep -n -o -w -e 10 -e 20 F | tr \\n ,
+#        1:10,11:20,% seq 10 120 | grep -n -o -w -e\[12]0 F | tr \\n ,
+#        1:10,11:20,% seq 10 120 | grep -n -o -w \[12]0 F | tr \\n ,
+#        1:10,11:20,% seq 10 120 | grep -n -o -w F -e\[12]0 | tr \\n ,
+#        1:10,11:20,%
+#
+#    OK. So what is the "standardized" flag format that we will use?
+#    The answer is that multiflag input lines will go into separate lines.
+#    So an input line of "-ninwoven" becomes "-n\n-i\n-n\n-w\n-o\n-v\n-en".
+#    (Note that, for this assignment, only the v, i, n, o, w, and e flags
+#    are used. Not also that the things after a -e flag are an expression,
+#    so they don't expand onto different lines.)
+#    Another standardization rule is that the argument for the "-e" must be
+#    moved so it comes right after the -e. So an input "-eregexp" is good,
+#    but an input "-e regexp" will be on two lines of the .__args1 file.
+#    You'll need to do a "N" and a "s/.../.../" to turn it into "-eregexp".
+# 
+#  - As for the second sed one-liner, its job is to make sure the regular
+#    expression does have a "-e" in front of it.  Let's explain that...
+#    Look again at some of the earlier nonstandard-flag examples:
+#        % seq 10 120 | grep -now '[12]0' | tr \\n ,
+#        ...
+#        1:10,11:20,% seq 10 120 | grep -n -o -w \[12]0 F | tr \\n ,
+#        1:10,11:20,% seq 10 120 | grep -n -o -w F -e\[12]0 | tr \\n ,
+#        1:10,11:20,%
+#    See that grep does not require a -e in front of the expression -- if
+#    there is no -e, then the first argument that doesn't have a "-" is the
+#    one that is to be treated as the expression.
+#    Therefore, what does the second sed oneliner do? It puts a "-e" in
+#    front of the first line that doesn't start with a "-", but only if
+#    there are no "-e"s already. (Hint: this means you need to read all 
+#    lines in first-- otherwise you won't know there are no "-e"s already)
+cat .__args1| sed '___________________' |\
+              sed '___________________'>.__args2
+
+# At this point, the only way to not have a "-e" flag in .__args2 is if
+# the user did not provide any expressions. So that is what the following
+# ____________ tests for:
+if ( ____________ ) then
+   echo Usage: ./grep [OPTION]... PATTERNS [FILE]...
+   rm -f .__args[12] .__redirect[12]
+   exit 1
+endif
+
+# The following line passes only the flags into sed2sed:
+grep -v ^\[^-] .__args2 | ./sed2sed.sed > .__args1
+
+# The following line stores all the nonflags of .__args2 into an array:
+set filenames = ______________
+
+# The following line tests for whether the filenames array is empty:
+if _____________ then
+   # If the array is empty, then no file name was passed-in. That means
+   # that the input data is being streamed in through a pipe or redirect.
+   # The following line puts the stream into a file, .__redirect1: 
+   cat > .__redirect1
+   # Now that the input is in a file, its name can store into the array:
+   set filenames = ( .__redirect1 )
+endif
+
+#We create an empty variable, FN:
+set FN
+
+#We loop through the files:
+foreach f ( $filenames )
+   # If there are multiple files, then we do a: "set FN = $f\:". But why?
+   # It is because, when there are multiple input files, grep will put
+   # the file name in front of each. See that this happening here:
+   #     % seq 4 | tee F1 > F2 ; grep 3 F?
+   #     F1:3
+   #     F2:3
+   #     % grep 3 F1
+   #     3
+   #     %
+   if ( _________ ) set FN = $f\:
+
+   # So now, we pass the file as an input to a sed that gets its program
+   # from .__args1, which we created above.
+   # This output is then sent to a second sed that adds any "...:"s to the
+   # front of output lines-- be it a "filename:" and/or a "linenumber:".
+   # Note: consulting sed2sed.sed, we see that a -n flag will result in
+   # three output lines for each match: 1) a "=", 2) a line #, 3) the line.
+   # Also note: this time we use " instead of ', because we need to use $FN.
+   cat $f|sed -f .__args1 |\
+          sed "__________________________"
+end
+rm -f .__args[12] .__redirect[12]

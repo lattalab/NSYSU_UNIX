@@ -1,0 +1,7 @@
+# This tests your script on all color codes, with outputs sent to colorechoout.
+# It then runs ./checker to see if your outputs were correct.
+
+rm -f colorechoout
+cat colorechoargs | xargs -L1 ./colorecho
+echo;echo
+./checker
