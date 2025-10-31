@@ -4,3 +4,8 @@
 you can ignore `grep.tar` and `B103040045_grep` , they are the same as `hw3`.
 
 The folder `awk` is some testing UNIX command based the content of PPT.
+
+* HW1: output string or character with specific color
+* HW2: sed example and how to quote the string correctly
+* HW3: simulate `grep` command with sed
+* Hw4: simulate `grep` command with **sed and awk**
